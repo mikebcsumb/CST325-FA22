@@ -10,6 +10,13 @@
         function init() {
             console.log("howdy");
             myCanvas = document.getElementById("canvas");
+            // var newRectangleInstance = new Rectangle(20, 20, "rgb(0, 255, 0)");
+            // sceneList.push(newRectangleInstance);
+            // newRectangleInstance = new Rectangle(80, 20, "rgb(0, 255, 0)");
+            // sceneList.push(newRectangleInstance);
+            // newRectangleInstance = new Rectangle(140, 20, "rgb(0, 255, 0)");
+            // sceneList.push(newRectangleInstance);
+            //newRectangleInstance.draw();
             updateAndDraw()
         }
         //console.log(sceneList);
@@ -18,7 +25,7 @@
             var ctx = myCanvas.getContext("2d");
             ctx.clearRect(0, 0, 1000, 1000);
             var newRectangleInstance = new Rectangle(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000), "rgb(" + Math.floor(Math.random() * 255) +
-                ", " + Math.floor(Math.random() * 255) + ", " + Math.floor(Math.random() * 255) + ")");
+                ", " + Math.floor(Math.random() * 255) + ", " + Math.floor(Math.random() * 255) + ")", 50, 50);
             sceneList.push(newRectangleInstance);
 
             //newRectangleInstance.update(); //testimmgggg.........
@@ -27,9 +34,9 @@
             //sceneList.forEach(myColor)
 
             sceneList.forEach(myFunct);
-            sceneList[0].y = sceneList[0].y + 1; //testing.........
-            //console.log(sceneList[0])
-            if (currentFrameNumber < 1000) {
+            //sceneList[0].y = sceneList[0].y + 1; //testing.........
+            //
+            if (currentFrameNumber < 10000) {
                 window.requestAnimationFrame(updateAndDraw);
             }
 
@@ -46,9 +53,27 @@
 
         //helper function that calls draw function on each rect
         function myFunct(value) {
-            //console.log(value);
-            value.update(); //i imagine this is where I update the location
-            //value.modifyColor();
+            if(value.y > 950 ){
+                value.isFalling=false;
+                value.bounces++;
+                //value.shrink();
+                console.log(value.height, value.width)
+            }
+            if(value.bounces > 200){
+                var index = sceneList.findIndex(value => value.bounces > 100);
+                sceneList.splice(index, 1);
+            }
+            if(value.velocity<=0){
+                value.isFalling=true;
+            }
+            if(value.isFalling==true){
+                value.update();
+            }
+            else{
+                value.bounce();
+                value.shrink()
+            }
+
             value.draw();
         }
 
@@ -56,23 +81,15 @@
             value.modifyColor();
         }
 
-        function Rectangle(x, y, color) {
+        function Rectangle(x, y, color, width, height) {
 
             this.x = x;
             this.y = y;
             this.color = color;
-            this.draw = function () {
-                var ctx = myCanvas.getContext("2d");
-                ctx.fillStyle = this.color;
-                ctx.fillRect(this.x, this.y, 50, 50);
-                ctx.strokeRect(this.x, this.y, 50, 50);
-                //console.log(this);
-            }
-            this.update = function () {
-                this.velocity.y++;
-                this.y = this.y + this.velocity.y * 0.16;
-                this.draw();
-            }
+            this.width = width;
+            this.height = height;
+            this.isFalling = true;
+            this.bounces = 0;
             this.velocity = {
                 x: 0,
                 y: 0
@@ -85,23 +102,34 @@
             //console.log(this.velocity);
         }
 
-            //Rectangle.prototype = RectanglePrototype;
+            var RectanglePrototype = {
+                draw:function(){
+                    var ctx = myCanvas.getContext("2d");
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                    ctx.strokeRect(this.x, this.y, this.width, this.height);
+                    //console.log(this);
+                },
+                update:function(){
+                    this.velocity.y++;
+                    this.y = this.y + this.velocity.y * 0.16;
+                    //this.draw();
+                },
+                bounce:function(){
+                    //this.isFalling = false;
+                    this.velocity.y--;
+                    this.y = this.y - this.velocity.y* 0.16;
+                    //this.draw();
+                    //this.bounces++;
+                },
+                shrink:function(){
+                    this.width=this.width-0.25;
+                    this.height=this.height-0.25;
+                }
 
-            // var RectanglePrototype = {
-            //     draw:function(){
-            //         var ctx = myCanvas.getContext("2d");
-            //         ctx.fillStyle = this.color;
-            //         ctx.fillRect(this.x, this.y, 50, 50);
-            //         ctx.strokeRect(this.x, this.y, 50, 50);
-            //         //console.log(this);
-            //     }
-            //     function update(){
-            //         this.velocity.y++;
-            //         this.y = this.y + this.velocity.y * 0.16;
-            //         this.draw();
-            //     }
+            };
 
-            // };
+            Rectangle.prototype = RectanglePrototype;
 
 
     </script>
