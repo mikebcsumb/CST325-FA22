@@ -10,12 +10,12 @@
         function init() {
             console.log("howdy");
             myCanvas = document.getElementById("canvas");
-            var newRectangleInstance = new Rectangle(20, 20, "rgb(0, 255, 0)");
-            sceneList.push(newRectangleInstance);
-            newRectangleInstance = new Rectangle(80, 20, "rgb(0, 255, 0)");
-            sceneList.push(newRectangleInstance);
-            newRectangleInstance = new Rectangle(140, 20, "rgb(0, 255, 0)");
-            sceneList.push(newRectangleInstance);
+            // var newRectangleInstance = new Rectangle(20, 20, "rgb(0, 255, 0)");
+            // sceneList.push(newRectangleInstance);
+            // newRectangleInstance = new Rectangle(80, 20, "rgb(0, 255, 0)");
+            // sceneList.push(newRectangleInstance);
+            // newRectangleInstance = new Rectangle(140, 20, "rgb(0, 255, 0)");
+            // sceneList.push(newRectangleInstance);
             //newRectangleInstance.draw();
             updateAndDraw()
         }
@@ -36,9 +36,10 @@
             sceneList.forEach(myFunct);
             //sceneList[0].y = sceneList[0].y + 1; //testing.........
             //
-            if (currentFrameNumber < 10000) {
-                window.requestAnimationFrame(updateAndDraw);
-            }
+            // if (currentFrameNumber < 10000) {
+            //     window.requestAnimationFrame(updateAndDraw);
+            // }
+            window.requestAnimationFrame(updateAndDraw);
 
             updateStats();
         }

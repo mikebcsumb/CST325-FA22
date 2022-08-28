@@ -10,8 +10,8 @@
         function init() {
             console.log("howdy");
             myCanvas = document.getElementById("canvas");
-            // var newRectangleInstance = new Rectangle(20, 20, "rgb(0, 255, 0)");
-            // sceneList.push(newRectangleInstance);
+            var newRectangleInstance = new Rectangle(20, 20, "rgb(0, 255, 0)", 50, 50);
+            sceneList.push(newRectangleInstance);
             // newRectangleInstance = new Rectangle(80, 20, "rgb(0, 255, 0)");
             // sceneList.push(newRectangleInstance);
             // newRectangleInstance = new Rectangle(140, 20, "rgb(0, 255, 0)");
@@ -23,8 +23,8 @@
 
         function updateAndDraw() {
             var ctx = myCanvas.getContext("2d");
-            ctx.clearRect(0, 0, 1000, 1000);
-            var newRectangleInstance = new Rectangle(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000), "rgb(" + Math.floor(Math.random() * 255) +
+            ctx.clearRect(0, 0, 500, 500);
+            var newRectangleInstance = new Rectangle(Math.floor(Math.random() * 500), Math.floor(Math.random() * 250), "rgb(" + Math.floor(Math.random() * 255) +
                 ", " + Math.floor(Math.random() * 255) + ", " + Math.floor(Math.random() * 255) + ")", 50, 50);
             sceneList.push(newRectangleInstance);
 
@@ -53,28 +53,36 @@
 
         //helper function that calls draw function on each rect
         function myFunct(value) {
-            if(value.y > 950 ){
-                value.isFalling=false;
-                value.bounces++;
-                //value.shrink();
-                console.log(value.height, value.width)
-            }
-            if(value.bounces > 200){
-                var index = sceneList.findIndex(value => value.bounces > 100);
+
+            // if(value.startingY>=value.y){
+            //     value.isFalling=true;
+            // }
+            if(value.width < 1 && value.height < 1){
+                var index = sceneList.findIndex(value => value.width < 1 && value.height < 1);
                 sceneList.splice(index, 1);
             }
-            if(value.velocity<=0){
+            if(value.y  > 450 && value.isFalling==true){
+                value.isFalling=false;
+                value.bounces++;
+                value.modifyColor();
+                value.bounce();
+
+                //value.shrink();
+            }
+            if(value.velocity.y == 0){
                 value.isFalling=true;
             }
             if(value.isFalling==true){
                 value.update();
             }
-            else{
-                value.bounce();
-                value.shrink()
+            else{    
+                value.up();
             }
+            console.log(value.bounces)
 
             value.draw();
+            value.shrink()
+
         }
 
         function myColor(value) {
@@ -89,6 +97,7 @@
             this.width = width;
             this.height = height;
             this.isFalling = true;
+            this.startingY = y;
             this.bounces = 0;
             this.velocity = {
                 x: 0,
@@ -115,13 +124,22 @@
                     this.y = this.y + this.velocity.y * 0.16;
                     //this.draw();
                 },
-                bounce:function(){
+                up:function(){
                     //this.isFalling = false;
-                    this.velocity.y--;
-                    this.y = this.y - this.velocity.y* 0.16;
+                    
+                    this.velocity.y++;
+                    this.y = this.y + this.velocity.y* 0.16;
                     //this.draw();
                     //this.bounces++;
                 },
+
+                bounce:function(){
+                    if(this.isFalling == false){
+                        this.velocity.y = -(this.velocity.y);
+                    }
+
+                },
+
                 shrink:function(){
                     this.width=this.width-0.25;
                     this.height=this.height-0.25;
@@ -137,7 +155,7 @@
 </head>
 
 <body onload="init()">
-    <canvas id="canvas" width="1000" height="1000" style="border:1px solid gray;">
+    <canvas id="canvas" width="500" height="500" style="border:1px solid gray;">
 
     </canvas>
     <p id="frameCount">
