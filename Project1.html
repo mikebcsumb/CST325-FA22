@@ -1,0 +1,130 @@
+<html>
+
+<head>
+    <script>
+
+        var myCanvas;
+        var sceneList = [];
+        var currentFrameNumber = 0;
+
+        function init() {
+            console.log("howdy");
+            myCanvas = document.getElementById("canvas");
+            var newRectangleInstance = new Rectangle(20, 20, "rgb(0, 255, 0)");
+            sceneList.push(newRectangleInstance);
+            newRectangleInstance = new Rectangle(80, 20, "rgb(0, 255, 0)");
+            sceneList.push(newRectangleInstance);
+            newRectangleInstance = new Rectangle(140, 20, "rgb(0, 255, 0)");
+            sceneList.push(newRectangleInstance);
+            //newRectangleInstance.draw();
+            updateAndDraw()
+        }
+        //console.log(sceneList);
+
+        function updateAndDraw() {
+            var ctx = myCanvas.getContext("2d");
+            ctx.clearRect(0, 0, 300, 200);
+            var newRectangleInstance = new Rectangle(Math.floor(Math.random() * 300), Math.floor(Math.random() * 200), "rgb(" + Math.floor(Math.random() * 255) +
+                ", " + Math.floor(Math.random() * 255) + ", " + Math.floor(Math.random() * 255) + ")");
+            sceneList.push(newRectangleInstance);
+
+            //newRectangleInstance.update(); //testimmgggg.........
+            currentFrameNumber++;
+            //console.log(currentFrameNumber);
+            //sceneList.forEach(myColor)
+
+            sceneList.forEach(myFunct);
+            sceneList[0].y = sceneList[0].y + 1; //testing.........
+            //console.log(sceneList[0])
+            if (currentFrameNumber < 1000) {
+                window.requestAnimationFrame(updateAndDraw);
+            }
+
+            updateStats();
+        }
+
+        function updateStats() {
+            var p = document.getElementById("frameCount");
+            p.innerText = "Frame Count: " + currentFrameNumber;
+
+            var p = document.getElementById("rectangleCount");
+            p.innerText = "Rectangles Count: " + sceneList.length;
+        }
+
+        //helper function that calls draw function on each rect
+        function myFunct(value) {
+            //console.log(value);
+            value.update(); //i imagine this is where I update the location
+            //value.modifyColor();
+            value.draw();
+        }
+
+        function myColor(value) {
+            value.modifyColor();
+        }
+
+        function Rectangle(x, y, color) {
+
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.draw = function () {
+                var ctx = myCanvas.getContext("2d");
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, 50, 50);
+                ctx.strokeRect(this.x, this.y, 50, 50);
+                //console.log(this);
+            }
+            this.update = function () {
+                this.velocity.y++;
+                this.y = this.y + this.velocity.y * 0.16;
+                this.draw();
+            }
+            this.velocity = {
+                x: 0,
+                y: 0
+            };
+            this.modifyColor = function () {
+                this.color = "rgb(" + Math.floor(Math.random() * 255) +
+                    ", " + Math.floor(Math.random() * 255) + ", " + Math.floor(Math.random() * 255) + ")"
+            }
+            //console.log(this);
+            //console.log(this.velocity);
+        }
+
+            //Rectangle.prototype = RectanglePrototype;
+
+            // var RectanglePrototype = {
+            //     draw:function(){
+            //         var ctx = myCanvas.getContext("2d");
+            //         ctx.fillStyle = this.color;
+            //         ctx.fillRect(this.x, this.y, 50, 50);
+            //         ctx.strokeRect(this.x, this.y, 50, 50);
+            //         //console.log(this);
+            //     }
+            //     function update(){
+            //         this.velocity.y++;
+            //         this.y = this.y + this.velocity.y * 0.16;
+            //         this.draw();
+            //     }
+
+            // };
+
+
+    </script>
+
+</head>
+
+<body onload="init()">
+    <canvas id="canvas" width="300" height="200" style="border:1px solid gray;">
+
+    </canvas>
+    <p id="frameCount">
+        Frame Count: 0
+    </p>
+    <p id="rectangleCount">
+        Rectangle Count: 0
+    </p>
+</body>
+
+</html>
