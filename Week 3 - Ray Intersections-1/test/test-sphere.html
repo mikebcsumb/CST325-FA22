@@ -170,7 +170,9 @@ function testNormal() {
     // unlikely invalid intersection (1 negative point)
     var r6 = new Ray(new Vector3(0, 0, 10), new Vector3(0, 0, -1));
     var s6 = new Sphere(new Vector3(-1, 0, 0), 1);
+    console.log("TestingNORMAL")
     castResult = s6.raycast(r6);
+    
 
     try {
         assert(vectorEqual(castResult.normal, 1, 0, 0, "invalid normal"));

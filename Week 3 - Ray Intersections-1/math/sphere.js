@@ -89,11 +89,12 @@ Sphere.prototype = {
     // must save this since the ray changes each time.
     console.log(`r1.origin: ${r1.origin.x}, ${r1.origin.y}, ${r1.origin.z}`) 
     console.log(`r1.direction: ${r1.direction.x}, ${r1.direction.y}, ${r1.direction.z}`) 
-
+    console.log(`sphere radius: ${this.radius},  center: ${this.center.x}, ${this.center.y}, ${this.center.z}`) 
+    
     oMinusC = r1.origin.subtract(this.center);
     let a = r1.direction.dot(r1.direction);
     //console.log(`a: ${a}`);
-    let b = r1.direction.multiplyScalar(2).dot(oMinusC);
+    let b = r1.direction.clone().multiplyScalar(2).dot(oMinusC);
     //console.log(`b: ${b}`);
     let c = (oMinusC).dot(oMinusC)-1;
     //console.log(`c: ${c}`);
@@ -128,29 +129,74 @@ Sphere.prototype = {
       root1 = (-b + Math.sqrt(discriminant)) / (2 * a);
       root2 = (-b - Math.sqrt(discriminant)) / (2 * a);
         // result
-        console.log(`The roots of quadratic equation are ${root1} and ${root2}`);
+        //console.log(`The roots of quadratic equation are ${root1} and ${root2}`);
+      if (root1 > 0 && root1 < root2){
+        //root1 is the alpha,
+        var hitPoint = r1.origin.clone().multiplyScalar(root1);
+        // console.log(hitPoint);
+        // console.log(hitPoint.normalize());
+
+        return {
+          hit: true,
+          point: hitPoint,
+          normal: hitPoint.normalize(),
+          distance: root1
+        };
+
+      } else if (root2 > 0 && root1 > root2){
+        //root2 is the alpha
+        var hitPoint = r1.origin.clone().multiplyScalar(root2);
+        // console.log(hitPoint);
+        // console.log(hitPoint.normalize());
+			
+        return {
+				hit: true,
+				point: hitPoint,
+				normal: hitPoint.normalize(),
+				distance: root2
+			};
+      } 
     }
       
       // condition for real and equal roots
+      //means there is only one point. 
     else if (discriminant == 0) {
       root1 = root2 = -b / (2 * a);
+      var hitPoint = r1.direction.clone();
+      console.log(`r1.direction: ${r1.direction.x}, ${r1.direction.y}, ${r1.direction.z}`) 
+    console.log(`hitPoint ${hitPoint.x}, ${hitPoint.y}, ${hitPoint.z}`);
+    hitPoint = hitPoint.multiplyScalar(root2)
+    console.log(`hitPoint ${hitPoint.x}, ${hitPoint.y}, ${hitPoint.z}`);
+    hitPoint = hitPoint.add(r1.origin)
+    console.log(`hitPoint ${hitPoint.x}, ${hitPoint.y}, ${hitPoint.z}`);
+
+      newNormal = hitPoint.fromTo(this.center, hitPoint);
+      //hitPoint.normalize()
+    console.log(`hitPoint ${hitPoint.x}, ${hitPoint.y}, ${hitPoint.z}`);
+    console.log(`newNormal ${newNormal.x}, ${newNormal.y}, ${newNormal.z}`);
+
+    return {
+      hit: true,
+      point: newNormal,
+      normal: newNormal.normalize(),
+      distance: root2
+    };
       
           // result
-        console.log(`The roots of quadratic equation are ${root1} and ${root2}`);
     }
     // An object created from a literal that we will return as our result
     // Replace the null values in the properties below with the right values
     //TODO 
-    if (root1 > 0){
-      var result = {
-        hit: true,      // should be of type Boolean
-        point: null,    // should be of type Vector3
-        normal: this.normal,   // should be of type Vector3
-        distance: null, // should be of type Number (scalar)
-      };
-    }
+    // if (root1 > 0){
+    //   var result = {
+    //     hit: true,      // should be of type Boolean
+    //     point: null,    // should be of type Vector3
+    //     normal: this.normal,   // should be of type Vector3
+    //     distance: null, // should be of type Number (scalar)
+    //   };
+    // }
     var result = {
-      hit: null,      // should be of type Boolean
+      hit: false,      // should be of type Boolean
       point: null,    // should be of type Vector3
       normal: null,   // should be of type Vector3
       distance: null, // should be of type Number (scalar)
