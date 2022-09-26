@@ -42,8 +42,8 @@ var pi = Math.PI;
 var fovRadians  = (fov * pi) / 180; // todo -> convert degrees to radians
 
 var pixelWidth = 2/pixelsAcross// todo -> what's the size of a pixel from left to right?
-//if we have 8 pixels on the screen each pixel will be 1/8 width. half is 1/16
-var pixelHalfWidth = pixelWidth/2; // todo -> half of the pixel width
+
+var pixelHalfWidth = pixelWidth*.5; // todo -> half of the pixel width
 
 // How far away (scalar) the eye is from the image plane (see project guide for more info)
 var eyeDistance = 1/Math.tan(fovRadians/2); // = todo -> hint: related to tangent and field of view
@@ -69,11 +69,11 @@ var eyeCoordinate = new Vector3(0, 0, eyeDistance); // all of your rays will use
 // They also provide a "raycast" function that you can pass a ray to
 // in order to find intersection between the ray and the object
 
-var sphere = new Sphere(new Vector3(), 0.25);
+var sphere = new Sphere(new Vector3(0, 0, 0), 0.25);
 var plane = new Plane(new Vector3(0, 1, 0), new Vector3(0, -0.25, 0));
 var floor =  new Plane(undefined, new Vector3(0, -0.25, 0));   // new Plane(...);   validPoint => (0, -0.25, 0)
-var leftWall =  new Plane(new Vector3(1, 0, 0), new Vector3(-1, 0, 0));
-var rightWall = new Plane(new Vector3(-1, 0, 0), new Vector3(1, 0, 0));// new Plane(...);   validPoint => (1, 0, 0)
+var leftWall =  new Plane(new Vector3(1, 0, 0), new Vector3(-1, 0, 0), new Vector3(1, 0, 0));
+var rightWall = new Plane(new Vector3(-1, 0, 0), new Vector3(1, 0, 0), new Vector3(0, 1, 0));// new Plane(...);   validPoint => (1, 0, 0)
 var ceiling =   new Plane(new Vector3(0, -1, 0), new Vector3(0, 1, 0));// new Plane(...);   validPoint => (0, 1, 0)
 var backWall =  new Plane(new Vector3(0, 0, 1), new Vector3(0, 0, -1));// new Plane(...);   validPoint => (0, 0, -1)
 
@@ -84,9 +84,9 @@ var scene = [sphere, ceiling, floor, leftWall, rightWall, backWall];
 
 // -----------------------------------------------------------------------------
 // return a ray that goes from the eye point through the pixel at index (xPixelIndex, yPixelIndex)
-function generateRayForPixel(xPixelIndex, yPixelIndex) {
-	var pixelX = -1 + pixelHalfWidth + pixelWidth * xPixelIndex;
-	var pixelY = 1 - pixelHalfWidth - pixelWidth * yPixelIndex;
+function generateRayForPixel(xPixelIndex, yPixelIndex, offsetX, offsetY) {
+	var pixelX = -1 + offsetX + pixelWidth * xPixelIndex;
+	var pixelY = 1 - offsetY - pixelWidth * yPixelIndex;
 	var pixelCoordinate = new Vector3(pixelX, pixelY, 0);
 
 	// = vector from the eye to the pixel
@@ -95,15 +95,17 @@ function generateRayForPixel(xPixelIndex, yPixelIndex) {
 	// Creates a ray from the eye toward the pixelCoordinate
 	// = new Ray(...);
 	var pixelRay = new Ray(eyeCoordinate, direction);
+
 	return pixelRay;
+
 }
 
 // -----------------------------------------------------------------------------
-function setPixelColor(xPixelIndex, yPixelIndex, shadeOfGray /*[0,1]*/) {
+function setPixelColor(xPixelIndex, yPixelIndex, color /*[0,1]*/) {
 	var index = (yPixelIndex * pixelsAcross + xPixelIndex) * 4; // 4 bytes per pixel
-	imageData.data[index + 0] = shadeOfGray * 255; // red channel
-	imageData.data[index + 1] = shadeOfGray * 255; // green channel
-	imageData.data[index + 2] = shadeOfGray * 255; // blue channel
+	imageData.data[index + 0] = color.x * 255; // red channel
+	imageData.data[index + 1] = color.y * 255; // green channel
+	imageData.data[index + 2] = color.z * 255; // blue channel
 	imageData.data[index + 3] = 255;
 }
 
@@ -116,7 +118,13 @@ function updateAndRender(timeElapsed) {
 		for (var xPixelIndex = 0; xPixelIndex < pixelsAcross; ++xPixelIndex) {
 
 			// Uncomment this once you've coded generateRayForPixel
-			var pixelRay = generateRayForPixel(xPixelIndex, yPixelIndex);
+			var pixelRay = generateRayForPixel(xPixelIndex, yPixelIndex, pixelHalfWidth, pixelHalfWidth);
+			var pixelRay1 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.25, pixelWidth*.1);
+			var pixelRay2 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.9, pixelWidth*.25);
+			var pixelRay3 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.75, pixelWidth*.9);
+			var pixelRay4 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.1, pixelWidth*.75);
+
+
 
 			var lightPos = new Vector3(1,0,0);
 			var seconds = timeElapsed * 0.0008; // convert milliseconds to seconds
@@ -133,22 +141,32 @@ function updateAndRender(timeElapsed) {
 				if(tempRayResult.distance < minNum && tempRayResult.hit){
 					minNum = tempRayResult.distance
 					minIndex = i;
-					rayResult = tempRayResult;
 				}
 			}
+			rayResult = scene[minIndex].raycast(pixelRay);
+			rayResult1 = scene[minIndex].raycast(pixelRay1);
+			rayResult2 = scene[minIndex].raycast(pixelRay2);
+			rayResult3 = scene[minIndex].raycast(pixelRay3);
+			rayResult4 = scene[minIndex].raycast(pixelRay4);
+			//console.log(rayResult.color.x)
 
 			var toLight = lightPos.clone().fromTo(rayResult.point, lightPos);
-			toLight.normalize();
-			var normalDotLight = rayResult.normal.dot(toLight);
+			//toLight.clone().normalize();
+			var normalDotLight = rayResult.normal.dot(toLight.clone().normalize());
 			
 			var pixelRayShadow = new Ray(rayResult.point, toLight);
 			var rayResultShadow = sphere.raycast(pixelRayShadow);
 
 			if (normalDotLight > 0 ){
-				setPixelColor(xPixelIndex, yPixelIndex, normalDotLight); // light gray
-			} else if(rayResultShadow.hit == true && rayResultShadow.distance < toLight.length() ){
+				temp = scene[minIndex].color.clone().normalize();
+				setPixelColor(xPixelIndex, yPixelIndex, temp.multiplyScalar(normalDotLight)); // light gray
+				//tolight was normalized so we can call it again or clone it from before. 
+				//toLight = lightPos.clone().fromTo(rayResult.point, lightPos);
+				if(rayResultShadow.distance < toLight.length() ){
 					setPixelColor(xPixelIndex, yPixelIndex, 0);
-			 }else {
+			 }
+			} 
+			 else {
 			setPixelColor(xPixelIndex, yPixelIndex, 0); // black
 			} 
 

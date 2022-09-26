@@ -31,6 +31,7 @@ var Plane = function(normal, validPoint, color) {
 
 	this.normal = normal.clone().normalize();
 	this.validPoint = validPoint;
+  this.color = color; //Vector3
 }
 
 Plane.prototype = {
