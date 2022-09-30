@@ -119,10 +119,10 @@ function updateAndRender(timeElapsed) {
 
 			// Uncomment this once you've coded generateRayForPixel
 			var pixelRay = generateRayForPixel(xPixelIndex, yPixelIndex, pixelHalfWidth, pixelHalfWidth);
-			var pixelRay1 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.25, pixelWidth*.1);
-			var pixelRay2 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.9, pixelWidth*.25);
-			var pixelRay3 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.75, pixelWidth*.9);
-			var pixelRay4 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.1, pixelWidth*.75);
+			// var pixelRay1 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.25, pixelWidth*.1);
+			// var pixelRay2 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.9, pixelWidth*.25);
+			// var pixelRay3 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.75, pixelWidth*.9);
+			// var pixelRay4 = generateRayForPixel(xPixelIndex, yPixelIndex, pixelWidth*.1, pixelWidth*.75);
 
 
 
@@ -144,10 +144,10 @@ function updateAndRender(timeElapsed) {
 				}
 			}
 			rayResult = scene[minIndex].raycast(pixelRay);
-			rayResult1 = scene[minIndex].raycast(pixelRay1);
-			rayResult2 = scene[minIndex].raycast(pixelRay2);
-			rayResult3 = scene[minIndex].raycast(pixelRay3);
-			rayResult4 = scene[minIndex].raycast(pixelRay4);
+			// rayResult1 = scene[minIndex].raycast(pixelRay1);
+			// rayResult2 = scene[minIndex].raycast(pixelRay2);
+			// rayResult3 = scene[minIndex].raycast(pixelRay3);
+			// rayResult4 = scene[minIndex].raycast(pixelRay4);
 			//console.log(rayResult.color.x)
 
 			var toLight = lightPos.clone().fromTo(rayResult.point, lightPos);
