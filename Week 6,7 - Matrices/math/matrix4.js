@@ -243,10 +243,10 @@ Matrix4.prototype = {
 
 		// todo - set every element to the appropriate value
 
-		this.set(near/((Math.tan(fovyRads/2))/aspect),e[1],e[2],e[3], 
-			e[4],near/(Math.tan(fovyRads/2)),e[6],e[7], 
-			e[8],e[9],(-near-far)/(near-far),(2*near*far)/(near-far), 
-			e[12],e[13],1,e[16]);
+		this.set(near/(Math.tan(fovyRads/2)*aspect),0,0,0, 
+			0,near/(Math.tan(fovyRads/2)),0,0, 
+			0,0,-((near+far)/(far-near)),-((2*near*far)/(far-near)), 
+			0,0,-1,0);
 
 		return this;
 	},
@@ -257,6 +257,10 @@ Matrix4.prototype = {
 		var e = this.elements;
 
 		// todo - set every element to the appropriate value
+		this.set(2/(right-left),0,0, -((right+left)/(right-left)), 
+			0,2/(top-bottom),0,-((top+bottom)/(top-bottom)), 
+			0,0,-2/(far-near),-((near+far)/(far-near)), 
+			0,0,0,1);
 
 		return this;
 	},
@@ -274,6 +278,12 @@ Matrix4.prototype = {
 
 		var moonMatrix = new Matrix4();
 
+		var translation = new Matrix4().makeTranslation(offsetFromEarth);
+		//var translation1 = translation.multiply(earthWorldMatrix);
+		var rotation = new Matrix4().makeRotationZ(moonRotationAngle);
+		//moonMatrix.makeRotationX(90);
+		var temp = rotation.multiply(translation);
+		moonMatrix = earthWorldMatrix.multiply(temp);
 		// todo - create and combine all necessary matrices necessary to achieve the desired effect
 
 		return moonMatrix;
