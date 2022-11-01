@@ -13,18 +13,19 @@ function Camera(input) {
     // -------------------------------------------------------------------------
     this.getForward = function() {
         // todo #6 - pull out the forward direction from the world matrix and return as a vector
-        var e = this.cameraWorldMatrix.elements;
+        //var e = this.cameraWorldMatrix.elements;
+        var e = this.getViewMatrix().elements;
         //         - recall that the camera looks in the "backwards" direction
-        //last colun? 3rd column? z direction
-        //console.log(e)
+        // last colun? 3rd column? z direction
+        // console.log(e)
         // https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/lookat-function 
-        return new Vector3(e[8], e[9], e[10]);
+        return new Vector3(e[2], e[6], e[10]);
     }
     // -------------------------------------------------------------------------
     this.update = function(dt) {
         var currentForward = this.getForward();
-        //console.log(this.cameraPosition.z)
-        //console.log(currentForward.z)
+        console.log(this.cameraPosition.z)
+        console.log(this.getForward())
 
 
         if (input.up) {
@@ -32,7 +33,10 @@ function Camera(input) {
             //-z is forward
         //console.log("input up")
 
+            //this.cameraPosition.x = -(currentForward.x*0.1)
+            //this.cameraPosition.y = -(currentForward.y*0.1)
             this.cameraPosition.z = -(currentForward.z*0.1)
+
         //console.log(this.cameraPosition.z)
 
         }
@@ -64,7 +68,7 @@ function Camera(input) {
 
         this.cameraWorldMatrix.multiply(translation).multiply(rotation);
        // this.cameraWorldMatrix.multiply(rotation).multiply(translation);
-       //console.log(this.cameraWorldMatrix.elements)
+       console.log(this.cameraWorldMatrix.elements)
 
         // todo #8 - create a rotation matrix based on cameraYaw and apply it to the cameraWorldMatrix
         //this.cameraWorldMatrix = translation.makeRotationX(this.cameraYaw);

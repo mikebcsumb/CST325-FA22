@@ -105,7 +105,7 @@ function createScene() {
     groundGeometry.create();
 
     // todo #1 - translate the quad so you can see it
-    var scale = new Matrix4().makeScale(10,10,0);
+    var scale = new Matrix4().makeScale(10,10,10);
     var rotation = new Matrix4().makeRotationX(90);
 	var translation = new Matrix4().makeTranslation(0, -1, -10);
     groundGeometry.worldMatrix = translation.multiply(rotation).multiply(scale);
@@ -117,7 +117,7 @@ function createScene() {
     sphereGeometry.create(loadedAssets.sphereJSON);
 
     // todo #4 - scale and translate the sphere
-    scale = new Matrix4().makeScale(0.01, 0.01, 0);
+    scale = new Matrix4().makeScale(0.01, 0.01, 0.01);
 	translation = new Matrix4().makeTranslation(0, 0, -5);
     sphereGeometry.worldMatrix = translation.multiply(scale)
 }
