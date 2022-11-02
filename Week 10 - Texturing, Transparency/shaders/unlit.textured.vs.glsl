@@ -10,9 +10,11 @@ uniform mat4 uProjectionMatrix;
 // todo #2 - make sure to pass texture coordinates for interpolation to fragment shader (varying)
 // 1. Declare the variable correctly, 
 // 2. Set it correctly inside main
+varying vec2 texCoords;
 
 void main(void) {
     gl_Position = uProjectionMatrix * uViewMatrix * uWorldMatrix * vec4(aVertexPosition, 1.0);
+    texCoords = aTexcoords;
 }
 
 // EOF 00100001-10

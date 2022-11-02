@@ -47,7 +47,12 @@ function initGL(canvas) {
 
         // todo #7
         // todo enable depth test (z-buffering)
+        gl.enable(gl.DEPTH_TEST);
         // todo enable backface culling
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        //gl.cullFace(gl.FRONT_AND_BACK);
+
     } catch (e) {}
 
     if (!gl) {
@@ -151,17 +156,20 @@ function updateAndRender() {
 
     // todo #8
     //   1. enable blending
+    gl.enable(gl.BLEND);
     //   2. set blend mode source to gl.SRC_ALPHA and destination to gl.ONE_MINUS_SRC_ALPHA
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     // todo #10 apply the painter's algorithm
 
     // todo #6
     // uncomment when directed by guide
-    // for (var i = 0; i < sphereGeometryList.length; ++i) {
-    //     sphereGeometryList[i].render(camera, projectionMatrix, textureShaderProgram);
-    // }
+    for (var i = 0; i < sphereGeometryList.length; ++i) {
+        sphereGeometryList[i].render(camera, projectionMatrix, textureShaderProgram);
+    }
 
     // todo - disable blending
+    gl.disable(gl.BLEND);
 }
 
 // EOF 00100001-10
