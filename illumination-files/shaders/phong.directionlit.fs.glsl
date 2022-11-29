@@ -17,15 +17,21 @@ void main(void) {
 
     // todo #3 calculate the lambert term
     float lamb = max (dot(normalLight, newWorldNormal), 0.0);
+    //float lamb = dot(normalLight, newWorldNormal);
     // specular contribution
     // todo #4 in world space, calculate the direction from the surface point to the eye (normalized)
     vec3 eyeVec = normalize(vec3(uCameraPosition.x - vWorldPosition.x, uCameraPosition.y - vWorldPosition.y, uCameraPosition.z - vWorldPosition.z));
+    //vec3 eyeVec = vec3(uCameraPosition.x - vWorldPosition.x, uCameraPosition.y - vWorldPosition.y, uCameraPosition.z - vWorldPosition.z);
 
     // todo #5 in world space, calculate the reflection vector (normalized) r = -l + 2(l . n )n
     float distance = 2.0 * max(dot(uLightDirection, newWorldNormal), 0.0);
+    //float distance = 2.0 * dot(uLightDirection, newWorldNormal);
+
     vec3 temp = newWorldNormal * distance;
     //vec3 temp = vec3(newWorldNormal.x * distance, newWorldNormal.y * distance, newWorldNormal.z * distance);
     vec3 reflection = normalize(vec3(-uLightDirection.x + temp.x, -uLightDirection.y + temp.y, -uLightDirection.z + temp.z));
+    //vec3 reflection = vec3(-uLightDirection.x + temp.x, -uLightDirection.y + temp.y, -uLightDirection.z + temp.z);
+
     // todo #6 calculate the phong term Phong = (r . v)^n
     float sum = max(dot(reflection, eyeVec), 0.0);
     float phong = pow(sum, 64.0);
