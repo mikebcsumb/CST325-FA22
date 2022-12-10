@@ -34,5 +34,5 @@ void main(void) {
 
     finalColor = finalColor * attenuation;
 
-    gl_FragColor = vec4(finalColor, 1.0);
+    gl_FragColor = vec4(diffuseColor, 1.0);
 }

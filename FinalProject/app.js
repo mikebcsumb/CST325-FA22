@@ -9,6 +9,13 @@ var camera = new OrbitCamera(appInput);
 var sunGeometry = null; // this will be created after loading from a file
 var earthGeometry = null;
 var moonGeometry = null;
+var mercuryGeometry = null;
+var venusGeometry = null;
+var marsGeometry = null;
+var jupiterGeometry = null;
+var saturnGeometry = null;
+var uranusGeometry = null;
+var neptuneGeometry = null;
 var groundGeometry = null;
 var topGeometry = null;
 var backGeometry = null;
@@ -18,8 +25,15 @@ var rightGeometry = null;
 
 var projectionMatrix = new Matrix4();
 var lightPosition = new Vector3();
+var mercuryPosition = new Vector3();
+var venusPosition = new Vector3();
 var earthPosition = new Vector3();
 var moonPosition = new Vector3();
+var marsPosition = new Vector3();
+var jupiterPosition = new Vector3();
+var saturnPosition = new Vector3();
+var uranusPosition = new Vector3();
+var neptunePosition = new Vector3();
 
 // the shader that will be used by each piece of geometry (they could each use their own shader but in this case it will be the same)
 var phongShaderProgram;
@@ -175,81 +189,116 @@ function createScene() {
     //floor
     groundGeometry = new WebGLGeometryQuad(gl, phongShaderProgram);
     groundGeometry.create(loadedAssets.skyNegZ);
-    var scale = new Matrix4().makeScale(60.0, 60.0, 60.0);
+    var scale = new Matrix4().makeScale(120.0, 120.0, 120.0);
     // compensate for the model being flipped on its side
     var rotation = new Matrix4().makeRotationX(-90);
-    var translation = new Matrix4().makeTranslation(0, 0, -30);
+    var translation = new Matrix4().makeTranslation(0, 0, -120);
     groundGeometry.worldMatrix.makeIdentity();
     groundGeometry.worldMatrix.multiply(rotation).multiply(translation).multiply(scale);
     //top
     topGeometry = new WebGLGeometryQuad(gl, phongShaderProgram);
     topGeometry.create(loadedAssets.skyPosZ);
-    var scale = new Matrix4().makeScale(60.0, 60.0, 60.0);
-    // compensate for the model being flipped on its side
     var rotation = new Matrix4().makeRotationX(-90);
-    var translation = new Matrix4().makeTranslation(0, 0, 30);
+    var translation = new Matrix4().makeTranslation(0, 0, 120);
     topGeometry.worldMatrix.makeIdentity();
     topGeometry.worldMatrix.multiply(rotation).multiply(translation).multiply(scale);
     //back wall
     backGeometry = new WebGLGeometryQuad(gl, phongShaderProgram);
     backGeometry.create(loadedAssets.skyPosX);
-    var scale = new Matrix4().makeScale(60.0, 60.0, 60.0);
-    // compensate for the model being flipped on its side
-    //var rotation = new Matrix4().makeRotationX(90);
-    var translation = new Matrix4().makeTranslation(0, 0, -30);
+    var translation = new Matrix4().makeTranslation(0, 0, -120);
     backGeometry.worldMatrix.makeIdentity();
     backGeometry.worldMatrix.multiply(translation).multiply(scale);
     //front wall
     frontGeometry = new WebGLGeometryQuad(gl, phongShaderProgram);
     frontGeometry.create(loadedAssets.skyNegX);
-    var scale = new Matrix4().makeScale(60.0, 60.0, 60.0);
-    // compensate for the model being flipped on its side
-    //var rotation = new Matrix4().makeRotationX(90);
-    var translation = new Matrix4().makeTranslation(0, 0, 30);
+    var translation = new Matrix4().makeTranslation(0, 0, 120);
     frontGeometry.worldMatrix.makeIdentity();
     frontGeometry.worldMatrix.multiply(translation).multiply(scale);
     //left wall
     leftGeometry = new WebGLGeometryQuad(gl, phongShaderProgram);
     leftGeometry.create(loadedAssets.skyNegX);
-    var scale = new Matrix4().makeScale(60.0, 60.0, 60.0);
-    // compensate for the model being flipped on its side
     var rotation = new Matrix4().makeRotationY(90);
-    var translation = new Matrix4().makeTranslation(0, 0, -30);
+    var translation = new Matrix4().makeTranslation(0, 0, -120);
     leftGeometry.worldMatrix.makeIdentity();
     leftGeometry.worldMatrix.multiply(rotation).multiply(translation).multiply(scale);
     //right wall
     rightGeometry = new WebGLGeometryQuad(gl, phongShaderProgram);
     rightGeometry.create(loadedAssets.skyNegX);
-    var scale = new Matrix4().makeScale(60.0, 60.0, 60.0);
-    // compensate for the model being flipped on its side
     var rotation = new Matrix4().makeRotationY(-90);
-    var translation = new Matrix4().makeTranslation(0, 0, -30);
+    var translation = new Matrix4().makeTranslation(0, 0, -120);
     rightGeometry.worldMatrix.makeIdentity();
     rightGeometry.worldMatrix.multiply(rotation).multiply(translation).multiply(scale);
 
+    //SUN LIGHT
     sunGeometry = new WebGLGeometryJSON(gl, phongShaderProgram);
     sunGeometry.create(loadedAssets.sphereJSON, loadedAssets.sunImage);
-
-    // Scaled it down so that the diameter is 3
-    var scale = new Matrix4().makeScale(0.03, 0.03, 0.03);
-    // raise it by the radius to make it sit on the ground
+    var scale = new Matrix4().makeScale(0.08, 0.08, 0.08);
     var translation = new Matrix4().makeTranslation(0, 1.5, 0);
-    //SUN LIGHT
     sunGeometry.worldMatrix.makeIdentity();
     sunGeometry.worldMatrix.multiply(translation).multiply(scale);
     //EARTH
     earthGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
     earthGeometry.create(loadedAssets.sphereJSON, loadedAssets.earthImage);
     var earthScale = new Matrix4().makeScale(0.025, 0.025, 0.025);
-    earthGeometry.worldMatrix.makeIdentity().multiply(earthScale);
+    var rotate = new Matrix4().makeRotationZ(23);
+    earthGeometry.worldMatrix.makeIdentity().multiply(earthScale).multiply(rotate);
     //MOON
     moonGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
     moonGeometry.create(loadedAssets.sphereJSON, loadedAssets.moonImage);
-    var moonScale = new Matrix4().makeScale(0.05, 0.05, 0.05);
+    var moonScale = new Matrix4().makeScale(0.008, 0.008, 0.008);
+    moonGeometry.worldMatrix = moonGeometry.worldMatrix.multiply(earthGeometry.worldMatrix);
     moonGeometry.worldMatrix.makeIdentity().multiply(moonScale);
+    //mercury
+    mercuryGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
+    mercuryGeometry.create(loadedAssets.sphereJSON, loadedAssets.mercuryImage);
+    var mercuryScale = new Matrix4().makeScale(0.01, 0.01, 0.01);
+    mercuryGeometry.worldMatrix.makeIdentity().multiply(mercuryScale);
+    //venus
+    venusGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
+    venusGeometry.create(loadedAssets.sphereJSON, loadedAssets.venusImage);
+    //var mercuryScale = new Matrix4().makeScale(0.01, 0.01, 0.01);
+    var rotate = new Matrix4().makeRotationZ(177);
+    venusGeometry.worldMatrix.makeIdentity().multiply(earthScale).multiply(rotate);
+    //mars
+    marsGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
+    marsGeometry.create(loadedAssets.sphereJSON, loadedAssets.marsImage);
+    var rotate = new Matrix4().makeRotationZ(25);
+    var marsScale = new Matrix4().makeScale(0.012, 0.012, 0.012);
+    marsGeometry.worldMatrix.makeIdentity().multiply(marsScale).multiply(rotate);
+    //jupiter
+    jupiterGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
+    jupiterGeometry.create(loadedAssets.sphereJSON, loadedAssets.jupiterImage);
+    // ringGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
+    // ringGeometry.create(loadedAssets.sphereJSON, loadedAssets.jupiterImage);
+    var jupiterScale = new Matrix4().makeScale(0.05, 0.05, 0.05);
+    jupiterGeometry.worldMatrix.makeIdentity().multiply(jupiterScale);
+    //saturn
+    saturnGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
+    saturnGeometry.create(loadedAssets.sphereJSON, loadedAssets.saturnImage);
+    var rotate = new Matrix4().makeRotationZ(27);
+    var saturnScale = new Matrix4().makeScale(0.045, 0.045, 0.045);
+    saturnGeometry.worldMatrix.makeIdentity().multiply(saturnScale).multiply(rotate);
+    //uranus
+    uranusGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
+    uranusGeometry.create(loadedAssets.sphereJSON, loadedAssets.uranusImage);
+    var rotate = new Matrix4().makeRotationZ(97);
+    var uranusScale = new Matrix4().makeScale(0.035, 0.035, 0.035);
+    uranusGeometry.worldMatrix.makeIdentity().multiply(uranusScale).multiply(rotate);
+    //neptune
+    neptuneGeometry = new WebGLGeometryJSON(gl, basicColorProgram);
+    neptuneGeometry.create(loadedAssets.sphereJSON, loadedAssets.neptuneImage);
+    var rotate = new Matrix4().makeRotationZ(28);
+    var neptuneScale = new Matrix4().makeScale(0.035, 0.035, 0.035);
+    neptuneGeometry.worldMatrix.makeIdentity().multiply(neptuneScale).multiply(rotate);
+
 }
 
 // -------------------------------------------------------------------------
+function createEarthMatrix(angleZ, position) {
+    var translation = new Matrix4().makeTranslation(position);
+    var rotation = new Matrix4().makeRotationZ(angleZ);
+    return rotation.multiply(translation);
+  }
 function createMoonMatrix(moonRotationAngle, offsetFromEarth, earthWorldMatrix) {
     var moonMatrix = new Matrix4();
     var translation = new Matrix4().makeTranslation(offsetFromEarth);
@@ -267,37 +316,137 @@ function updateAndRender() {
     time.update();
     camera.update(time.deltaTime);
 
+    
+
+    var rotation = new Matrix4().makeRotationY(0.03);
+    sunGeometry.worldMatrix.multiply(rotation);
+    //mercury
+    var cosTime = Math.cos(time.secondsElapsedSinceStart * 1.6);
+    var sinTime = Math.sin(time.secondsElapsedSinceStart * 1.6);
+    var rotation = new Matrix4().makeRotationY(0.01);
+    mercuryGeometry.worldMatrix.multiply(rotation);
+    var mercuryDistance = 5;
+    mercuryPosition.x = cosTime * mercuryDistance;
+    mercuryPosition.y = 1.5;
+    mercuryPosition.z = sinTime * mercuryDistance;
+    mercuryGeometry.worldMatrix.elements[3] = mercuryPosition.x;
+    mercuryGeometry.worldMatrix.elements[7] = mercuryPosition.y;
+    mercuryGeometry.worldMatrix.elements[11] = mercuryPosition.z; 
+    //venus
+    var cosTime = Math.cos(time.secondsElapsedSinceStart * 1.2);
+    var sinTime = Math.sin(time.secondsElapsedSinceStart * 1.2);
+    var venusDistance = mercuryDistance+2;
+    venusPosition.x = cosTime * venusDistance;
+    venusPosition.y = 1.5;
+    venusPosition.z = sinTime * venusDistance;
+    venusGeometry.worldMatrix.elements[3] = venusPosition.x;
+    venusGeometry.worldMatrix.elements[7] = venusPosition.y;
+    venusGeometry.worldMatrix.elements[11] = venusPosition.z; 
+    //earth
     var cosTime = Math.cos(time.secondsElapsedSinceStart);
     var sinTime = Math.sin(time.secondsElapsedSinceStart);
-
-    // special case rotation where the vector is along the x-axis (4, 0)
-    var earthDistance = 8;
-
-    var rotation = new Matrix4().makeRotationY(0.1);
-    sunGeometry.worldMatrix.multiply(rotation);
-
+    var rotation = new Matrix4().makeRotationY(1);
+    earthGeometry.worldMatrix.multiply(rotation);
+    var earthDistance = venusDistance+3;
     earthPosition.x = cosTime * earthDistance;
     earthPosition.y = 1.5;
     earthPosition.z = sinTime * earthDistance;
+    earthGeometry.worldMatrix.elements[3] = earthPosition.x;
+    earthGeometry.worldMatrix.elements[7] = earthPosition.y;
+    earthGeometry.worldMatrix.elements[11] = earthPosition.z;
+    //earth done now moon
+    var cosTime = Math.cos(time.secondsElapsedSinceStart * 2);
+    var sinTime = Math.sin(time.secondsElapsedSinceStart * 2);
+    var moonDistance = 2;
+    moonPosition.x = cosTime * moonDistance;
+    moonPosition.y = 1.5;
+    moonPosition.z = sinTime * moonDistance;
+    moonGeometry.worldMatrix.elements[3] = earthPosition.x + moonPosition.x;
+    // moonGeometry.worldMatrix.elements[3] = moonPosition.x;
+
+    moonGeometry.worldMatrix.elements[7] = moonPosition.y;
+    moonGeometry.worldMatrix.elements[11] = earthPosition.z + moonPosition.z;
+    // moonGeometry.worldMatrix.elements[11] = moonPosition.z;
+
+    //mars
+    var cosTime = Math.cos(time.secondsElapsedSinceStart * 0.5);
+    var sinTime = Math.sin(time.secondsElapsedSinceStart * 0.5);
+    marsGeometry.worldMatrix.multiply(rotation);
+    var marsDistance = earthDistance+4;
+    marsPosition.x = cosTime * marsDistance;
+    marsPosition.y = 1.5;
+    marsPosition.z = sinTime * marsDistance;
+    marsGeometry.worldMatrix.elements[3] = marsPosition.x;
+    marsGeometry.worldMatrix.elements[7] = marsPosition.y;
+    marsGeometry.worldMatrix.elements[11] = marsPosition.z; 
+    //jupiter
+    var cosTime = Math.cos(time.secondsElapsedSinceStart * 0.3);
+    var sinTime = Math.sin(time.secondsElapsedSinceStart * 0.3);
+    var rotation = new Matrix4().makeRotationY(2.3);
+    jupiterGeometry.worldMatrix.multiply(rotation);
+    var jupiterDistance = marsDistance + 4.5;
+    jupiterPosition.x = cosTime * jupiterDistance;
+    jupiterPosition.y = 1.5;
+    jupiterPosition.z = sinTime * jupiterDistance;
+    jupiterGeometry.worldMatrix.elements[3] = jupiterPosition.x;
+    jupiterGeometry.worldMatrix.elements[7] = jupiterPosition.y;
+    jupiterGeometry.worldMatrix.elements[11] = jupiterPosition.z; 
+    //saturn
+    var cosTime = Math.cos(time.secondsElapsedSinceStart * 0.2);
+    var sinTime = Math.sin(time.secondsElapsedSinceStart * 0.2);
+    var rotation = new Matrix4().makeRotationY(2.1);
+    saturnGeometry.worldMatrix.multiply(rotation);
+    var saturnDistance = jupiterDistance+6;
+    saturnPosition.x = cosTime * saturnDistance;
+    saturnPosition.y = 1.5;
+    saturnPosition.z = sinTime * saturnDistance;
+    saturnGeometry.worldMatrix.elements[3] = saturnPosition.x;
+    saturnGeometry.worldMatrix.elements[7] = saturnPosition.y;
+    saturnGeometry.worldMatrix.elements[11] = saturnPosition.z; 
+    //uranus
+    var cosTime = Math.cos(time.secondsElapsedSinceStart * 0.1);
+    var sinTime = Math.sin(time.secondsElapsedSinceStart * 0.1);
+    var rotation = new Matrix4().makeRotationY(1.3);
+    uranusGeometry.worldMatrix.multiply(rotation);
+    var uranusDistance = saturnDistance+5;
+    uranusPosition.x = cosTime * uranusDistance;
+    uranusPosition.y = 1.5;
+    uranusPosition.z = sinTime * uranusDistance;
+    uranusGeometry.worldMatrix.elements[3] = uranusPosition.x;
+    uranusGeometry.worldMatrix.elements[7] = uranusPosition.y;
+    uranusGeometry.worldMatrix.elements[11] = uranusPosition.z; 
+    //neptune
+    var cosTime = Math.cos(time.secondsElapsedSinceStart * 0.05);
+    var sinTime = Math.sin(time.secondsElapsedSinceStart * 0.05);
+    var rotation = new Matrix4().makeRotationY(1.4);
+    uranusGeometry.worldMatrix.multiply(rotation);
+    var neptuneDistance = uranusDistance+4;
+    neptunePosition.x = cosTime * neptuneDistance;
+    neptunePosition.y = 1.5;
+    neptunePosition.z = sinTime * neptuneDistance;
+    neptuneGeometry.worldMatrix.elements[3] = neptunePosition.x;
+    neptuneGeometry.worldMatrix.elements[7] = neptunePosition.y;
+    neptuneGeometry.worldMatrix.elements[11] = neptunePosition.z; 
+
+    //var translation = new Matrix4().makeTranslation(earthPosition);
+    //earthGeometry.worldMatrix.multiply(translation);
+
     // lightPosition.x = cosTime * earthDistance;
     // lightPosition.y = 1.5;
     // lightPosition.z = sinTime * earthDistance;
 
-    rotation = new Matrix4().makeRotationY(-time.secondsElapsedSinceStart);
-    earthGeometry.worldMatrix.multiply(rotation);
-    earthGeometry.worldMatrix.elements[3] = earthPosition.x;
-    earthGeometry.worldMatrix.elements[7] = earthPosition.y;
-    earthGeometry.worldMatrix.elements[11] = earthPosition.z;
+    //rotation = new Matrix4().makeRotationY(-time.secondsElapsedSinceStart);
+    //earthGeometry.worldMatrix.multiply(rotation);
 
-    //earth done now moon
-    var moonDistance = 4;
-
-    //var temp = createMoonMatrix(1, new Vector4(0, 3, 0, 1), earthGeometry.worldMatrix);
-
+    // var earthTransform = createEarthMatrix(time.secondsElapsedSinceStart, earthPosition);
+    // var e = earthTransform.elements;
+    // earthGeometry.worldMatrix.set(
+    //   e[0], e[1], e[2], e[3],
+    //   e[4], e[5], e[6], e[7],
+    //   e[8], e[9], e[10], e[11],
+    //   e[12], e[13], e[14], e[15]
+    // );
     
-    // moonGeometry.worldMatrix.elements[3] = temp.x;
-    // moonGeometry.worldMatrix.elements[7] = temp.y;
-    // moonGeometry.worldMatrix.elements[11] = temp.z;
 
     // specify what portion of the canvas we want to draw to (all of it, full width and height)
     gl.viewport(0, 0, gl.canvasWidth, gl.canvasHeight);
@@ -322,8 +471,17 @@ function updateAndRender() {
     
     sunGeometry.render(camera, projectionMatrix, phongShaderProgram);
     moonGeometry.render(camera, projectionMatrix, phongShaderProgram);
-
+    mercuryGeometry.render(camera, projectionMatrix, phongShaderProgram);
+    venusGeometry.render(camera, projectionMatrix, phongShaderProgram);
+    earthGeometry.render(camera, projectionMatrix, phongShaderProgram);
+    marsGeometry.render(camera, projectionMatrix, phongShaderProgram);
+    jupiterGeometry.render(camera, projectionMatrix, phongShaderProgram);
+    saturnGeometry.render(camera, projectionMatrix, phongShaderProgram);
+    uranusGeometry.render(camera, projectionMatrix, phongShaderProgram);
+    neptuneGeometry.render(camera, projectionMatrix, phongShaderProgram);
     gl.useProgram(basicColorProgram);
     gl.uniform4f(basicColorProgram.uniforms.colorUniform, 1.0, 1.0, 1.0, 1.0);
-    earthGeometry.render(camera, projectionMatrix, phongShaderProgram);
+    
+
+    
 }
