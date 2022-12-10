@@ -1,3 +1,5 @@
+//Michael Bradley
+
 precision mediump float;
 
 uniform vec3 uLightPosition;
